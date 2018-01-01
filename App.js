@@ -4,27 +4,38 @@ import { StyleSheet, Text, View, TextInput,
 import {LoginPage} from './components/ios/login.js';
 import {UploadPage} from './components/ios/upload.js';
 import {BrowserPage} from './components/ios/browser.js';
+import {ArticlePage} from './components/ios/article.js';
+import {store} from './reducers'
+
 
 LOGIN_PAGE = "LOGIN_PAGE"
 UPLOAD_PAGE = "UPLOAD_PAGE"
 BROWSER_PAGE = "BROWSER_PAGE"
+Article_PAGE = "ARTICLE_PAGE"
 
 export default class App extends React.Component {
 
   constructor(props) {
     super(props);
     this.state = {
-      current_page: BROWSER_PAGE
+      LOGIN_PAGE: <LoginPage />,
+      UPLOAD_PAGE: <UploadPage />,
+      BROWSER_PAGE: <BrowserPage />,
+      ARTICLE_PAGE: <ArticlePage />,
+      current: LOGIN_PAGE
     }
   }
 
-  render() {
-    if (this.state.current_page == LOGIN_PAGE)
-      return <LoginPage/>;
-    else if (this.state.current_page == UPLOAD_PAGE)
-      return <UploadPage/>;
-    else if (this.state.current_page == BROWSER_PAGE)
-      return <BrowserPage/>;
+  componentDidMount() {
+    store.subscribe((()=>{
+      router = store.getState().router;
+      this.setState({current: router});
+    }).bind(this));
   }
 
+  render() {
+    this.state.current = store.getState().router;
+    return this.state[this.state.current];
+  }
 };
+

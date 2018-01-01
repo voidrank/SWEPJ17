@@ -1,7 +1,8 @@
 import React from 'react';
-import { StyleSheet, Text, View, TextInput,
-  TouchableHighlight } from 'react-native';
-
+import { StyleSheet, Text, View, TextInput, Button,
+  TouchableHighlight, Image } from 'react-native';
+import {Actions} from "react-native-router-flux";
+import {store} from "../../reducers";
 
 
 export class LoginPage extends React.Component {
@@ -9,20 +10,25 @@ export class LoginPage extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      loggedIn: false,
-      loadedCookie: false,
       username: "",
       password: ""
     }
   }
 
-  onSubmit() {
-    
+  _onPress() {
+    store.dispatch({
+      type: 'login',
+      user: {
+        username: this.state.username,
+        password: this.state.password
+      }
+    });
   }
 
   render() {
     return (
       <View style={styles.container}>
+        <Image source={require("../../media/logo.png")} style={styles.logo} />
         <View style={styles.form}>
           <TextInput
             style={styles.username}
@@ -37,13 +43,8 @@ export class LoginPage extends React.Component {
             value={this.state.password}
             placeholder={"password"}
           />
-          <TouchableHighlight onPress={this.onSubmit}>
-            <View style={styles.button}>
-              <Text style={styles.buttonText} >
-                SUBMIT
-              </Text>
-            </View>
-          </TouchableHighlight>
+          <Button onPress={this._onPress.bind(this)}
+                title="SUBMIT" color="#888888" />
         </View>
       </View>
     );
@@ -88,8 +89,10 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center"
   },
-  buttonText: {
-    fontWeight: "bold",
-    color: "#eeeeee"
+  logo: {
+    marginTop: -100,
+    marginBottom: 40,
+    height: 100,
+    width: 100
   }
 });

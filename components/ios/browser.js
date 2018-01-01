@@ -1,12 +1,7 @@
 import React from 'react';
-import { StyleSheet, Text, View, TextInput,
-  TouchableHighlight, ListView } from 'react-native';
-
-const TEST_CASES = [
-  ["How do you do today?", ""],
-  ["emmmmmmm....", ""],
-  ["Shame on you, fake news", ""],
-];
+import { StyleSheet, Text, View, TextInput, Button,
+  TouchableHighlight, ListView, Image } from 'react-native';
+import { store } from '../../reducers';
 
 export class BrowserPage extends React.Component {
   
@@ -14,17 +9,63 @@ export class BrowserPage extends React.Component {
     super(props);
     const ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
     this.state = {
-      dataSource: ds.cloneWithRows(TEST_CASES)
+      dataSource: ds.cloneWithRows(store.getState().articles)
     };
+  }
+
+  _getStar(uid) {
+    var stars = store.getState().stars;
+    var count = 0;
+    for (var i = 0; i < stars.length; ++i)
+      if (stars[i].uid === uid)
+        count++;
+    return count;
+  }
+
+  _getComment(uid) {
+    var comments = store.getState().comments;
+    var count = 0;
+    for (var i = 0; i < comments.length; ++i)
+      if (comments[i].uid === uid)
+        count++;
+    return count;
+  }
+
+  _goArticle(uid) {
+    store.dispatch({
+      type: "page_id",
+      page_id: uid
+    });
+    store.dispatch({
+      type: "router",
+      router: ARTICLE_PAGE 
+    });
+    console.log("????");
   }
 
   listItemRender(rowData) {
     return (
-      <View style={styles.listItem}>
-        <Text style={styles.listItemText}>
-          {rowData[0]}
-        </Text>
-      </View>);
+      <TouchableHighlight onPress={()=>{this._goArticle(rowData['uid'])}}>
+        <View style={styles.listItem}>
+          <View style={styles.imageView}>
+            <Image source={{uri: rowData['images'][0]}}
+              style={styles.listItemImage} />
+          </View>
+          <Text style={styles.listItemText}>
+            {rowData['content'].slice(0, 50)}
+          </Text>
+          <Text style={styles.starAndAuthor}>
+            {"Stars: " + this._getStar(rowData['uid']) + " Comments: " + this._getComment(rowData['uid']) + "   " + rowData['author']}
+          </Text>
+        </View>
+      </TouchableHighlight>);
+  }
+
+  _upload() {
+    store.dispatch({
+      type: 'router',
+      router: "UPLOAD_PAGE"
+    });
   }
 
   render() {
@@ -32,8 +73,11 @@ export class BrowserPage extends React.Component {
       <View style={styles.container}>
         <ListView
           dataSource={this.state.dataSource}
-          renderRow={this.listItemRender}
+          renderRow={this.listItemRender.bind(this)}
         />
+        <TouchableHighlight style={styles.footer} onPress={this._upload} underlayColor={'#6699CC'}>
+          <Text style={styles.upload}>+</Text>
+        </TouchableHighlight>
       </View>
     );
   }
@@ -48,7 +92,7 @@ const styles = StyleSheet.create({
     justifyContent: "center"
   },
   listItem: {
-    height: 100,
+    height: 250,
     width: 250,
     padding: 10,
     backgroundColor: "#f0f0f0",
@@ -56,5 +100,33 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 2, height: 2 },
     shadowOpacity: 0.5,
     shadowColor: '#000000'
+  },
+  listItemText: {
+    paddingTop: 10
+  },
+  listItemImage: {
+    height: 160,
+    width: 230
+  },
+  starAndAuthor: {
+    paddingTop: 20,
+    color: '#aaaaaa'
+  },
+  footer: {
+    position: 'absolute',
+    bottom: 0,
+    width: 50,
+    height: 50,
+    backgroundColor:'#66CCFF',
+    borderRadius: 40,
+    alignItems: "center"
+  },
+  upload: {
+    marginTop: 5.5,
+    marginLeft: 2,
+    height: 30,
+    fontSize: 30,
+    color: "#ffffff",
+    flexDirection:'row',
   }
 });
