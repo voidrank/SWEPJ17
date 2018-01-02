@@ -1,17 +1,20 @@
 import { createStore, combineReducers } from 'redux';
 
-LOGIN_PAGE = "LOGIN_PAGE"
-UPLOAD_PAGE = "UPLOAD_PAGE"
-BROWSER_PAGE = "BROWSER_PAGE"
-ARTICLE_PAGE = "ARTICLE_PAGE"
+const LOGIN_PAGE = "LOGIN_PAGE",
+  UPLOAD_PAGE = "UPLOAD_PAGE",
+  BROWSER_PAGE = "BROWSER_PAGE",
+  ARTICLE_PAGE = "ARTICLE_PAGE",
+  REGISTER_PAGE = "REGISTER_PAGE",
+  PROFILE_PAGE = 'PROFILE_PAGE',
+  FOLLOW_PAGE = 'FOLLOW_PAGE';
 
 initial_state = {
   users: [
-    {username: 'Lanshiyi', password: 'lanshiyi'}
+    {username: 'Lanshiyi', password: 'lanshiyi', tags:["dogfood"], follows: ['']}
   ],
   page_id: "1",
   state: 'Lanshiyi',
-  router: ARTICLE_PAGE,
+  router: FOLLOW_PAGE,
   articles: [
     { content: "How do you do today?", images: ["https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1515384828&di=6f28bc327997be3bf63c922849eb6897&imgtype=jpg&er=1&src=http%3A%2F%2Fimgsrc.baidu.com%2Fimgad%2Fpic%2Fitem%2Ff7246b600c3387447d2db0ff5b0fd9f9d62aa04d.jpg", "https://ss1.bdstatic.com/70cFvXSh_Q1YnxGkpoWK1HF6hhy/it/u=3633315665,1697461962&fm=200&gp=0.jpg", "https://ss1.bdstatic.com/70cFvXSh_Q1YnxGkpoWK1HF6hhy/it/u=3633315665,1697461962&fm=200&gp=0.jpg"], uid: "1", author: "Lanshiyi"},
     { content: "emmmmmmm....", images: ["https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1515387805&di=145da2779b38ca3892293acc16a75b60&imgtype=jpg&er=1&src=http%3A%2F%2Fimg2.niutuku.com%2Fdesk%2F1207%2F0819%2Fntk17248.jpg", "https://ss1.bdstatic.com/70cFvXSh_Q1YnxGkpoWK1HF6hhy/it/u=3633315665,1697461962&fm=200&gp=0.jpg"], uid: "2", author: "Lanshiyi"},
@@ -82,12 +85,10 @@ function starReducer(state=[], action) {
         idx = i;
         break;
       }
-    console.log(newState);
     if (found === 0)
       newState.splice(-1, 0, action.star);
     else
       newState.pop(idx);
-    console.log(newState);
     return newState;
   }
   else
@@ -115,7 +116,50 @@ function userReducer(state=[], action) {
   if (action.type === 'register') {
     let newState = state.slice();
     newState.splice(-1, 0, action.user);
+    console.log(newState);
     return newState;
+  }
+  else if (action.type === 'alter_password') {
+    let username = action.user.username, password = action.user.password,
+      newState = state.slice(), user;
+    for (var i = 0; i < newState.length; ++i)
+      if (newState[i].username === username) {
+        user = newState[i]
+        newState.pop(i);
+        break;
+      }
+    user.password = password;
+    newState.push(user);
+    return newState;
+  }
+  else if (action.type === 'add_tag') {
+    let username = action.user.username, tag = action.user.tag,
+      newState = state.slice(), user;
+    for (var i = 0; i < newState.length; ++i)
+      if (newState[i].username === username) {
+        user = newState[i]
+        newState.pop(i);
+        break;
+      }
+    user.tags.push(tag);
+    newState.push(user);
+    return newState;
+ 
+  }
+  else if (action.type === 'add_follow') {
+    let username = action.username, add_follow = action.add_follow,
+      newState = state.slice();
+    console.log(action);
+    for (var i = 0; i < newState.length; ++i)
+      if (newState[i].username === username) {
+        user = newState[i]
+        newState.pop(i);
+        break;
+      }
+    user.follows.push(add_follow);
+    newState.push(user);
+    return newState;
+
   }
   else {
     return state;
@@ -139,6 +183,9 @@ function stateReducer(state='anonymous', action) {
       }
     }
     return state;
+  }
+  else if (action.type === "logout") {
+    return "anonymous";
   }
   else {
     if (typeof state === 'undefined')

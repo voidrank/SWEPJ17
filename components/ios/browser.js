@@ -68,6 +68,20 @@ export class BrowserPage extends React.Component {
     });
   }
 
+  _goFriends() {
+    store.dispatch({
+      type: "router",
+      router: "FRIEND_PAGE",
+    });
+  }
+
+  _goProfile() {
+    store.dispatch({
+      type: "router",
+      router: "PROFILE_PAGE",
+    });
+  }
+
   render() {
     return (
       <View style={styles.container}>
@@ -77,6 +91,12 @@ export class BrowserPage extends React.Component {
         />
         <TouchableHighlight style={styles.footer} onPress={this._upload} underlayColor={'#6699CC'}>
           <Text style={styles.upload}>+</Text>
+        </TouchableHighlight>
+        <TouchableHighlight style={styles.friends} onPress={this._goFriends} underlayColor={'#6699CC'}>
+          <Text style={styles.upload}>F</Text>
+        </TouchableHighlight>
+        <TouchableHighlight style={styles.me} onPress={this._goProfile} underlayColor={'#6699CC'}>
+          <Text style={styles.upload}>M</Text>
         </TouchableHighlight>
       </View>
     );
@@ -111,6 +131,26 @@ const styles = StyleSheet.create({
   starAndAuthor: {
     paddingTop: 20,
     color: '#aaaaaa'
+  },
+  me: {
+    position: 'absolute',
+    bottom: 0,
+    left: 20,
+    width: 50,
+    height: 50,
+    backgroundColor:'#66CCFF',
+    borderRadius: 40,
+    alignItems: "center"
+  },
+  friends: {
+    position: 'absolute',
+    bottom: 0,
+    right: 20,
+    width: 50,
+    height: 50,
+    backgroundColor:'#66CCFF',
+    borderRadius: 40,
+    alignItems: "center"
   },
   footer: {
     position: 'absolute',

@@ -5,13 +5,18 @@ import {LoginPage} from './components/ios/login.js';
 import {UploadPage} from './components/ios/upload.js';
 import {BrowserPage} from './components/ios/browser.js';
 import {ArticlePage} from './components/ios/article.js';
-import {store} from './reducers'
+import {RegisterPage} from './components/ios/register.js';
+import {ProfilePage} from './components/ios/profile.js';
+import {FollowPage} from './components/ios/follow.js';
+import {store} from './reducers';
 
 
-LOGIN_PAGE = "LOGIN_PAGE"
-UPLOAD_PAGE = "UPLOAD_PAGE"
-BROWSER_PAGE = "BROWSER_PAGE"
-Article_PAGE = "ARTICLE_PAGE"
+const LOGIN_PAGE = "LOGIN_PAGE",
+  UPLOAD_PAGE = "UPLOAD_PAGE",
+  BROWSER_PAGE = "BROWSER_PAGE",
+  ARTICLE_PAGE = "ARTICLE_PAGE",
+  REGISTER_PAGE = "REGISTER_PAGE",
+  PROFILE_PAGE = "PROFILE_PAGE";
 
 export default class App extends React.Component {
 
@@ -22,6 +27,9 @@ export default class App extends React.Component {
       UPLOAD_PAGE: <UploadPage />,
       BROWSER_PAGE: <BrowserPage />,
       ARTICLE_PAGE: <ArticlePage />,
+      REGISTER_PAGE: <RegisterPage />,
+      PROFILE_PAGE: <ProfilePage />,
+      FOLLOW_PAGE: <FollowPage />,
       current: LOGIN_PAGE
     }
   }
