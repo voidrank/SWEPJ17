@@ -6,11 +6,15 @@ import { store } from '../../reducers';
 export class BrowserPage extends React.Component {
   
   constructor(props) {
-    super(props);
-    const ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
+    super(props)
+    var ststate = store.getState();
     this.state = {
-      dataSource: ds.cloneWithRows(store.getState().articles)
+      articles: store.getState().articles,
+      use_tag: false
     };
+    for (var i = 0; i < ststate.users.length; ++i)
+      if (ststate.users[i].username == ststate.state)
+        this.state.tags = ststate.users[i].tags;
   }
 
   _getStar(uid) {
@@ -40,7 +44,6 @@ export class BrowserPage extends React.Component {
       type: "router",
       router: ARTICLE_PAGE 
     });
-    console.log("????");
   }
 
   listItemRender(rowData) {
@@ -71,7 +74,7 @@ export class BrowserPage extends React.Component {
   _goFriends() {
     store.dispatch({
       type: "router",
-      router: "FRIEND_PAGE",
+      router: "FOLLOW_PAGE",
     });
   }
 
@@ -82,18 +85,65 @@ export class BrowserPage extends React.Component {
     });
   }
 
+  _goAdmin() {
+    if (store.getState().state === 'Lanshiyi')
+      store.dispatch({
+        type: "router",
+        router: "ADMIN_PAGE"
+      });
+  }
+
+  _use_tag() {
+    this.setState({use_tag: !this.state.use_tag});
+  }
+
   render() {
+
+    var articles = this.state.articles, that = this;
+
+    if (this.state.use_tag) {
+      articles = articles.sort((function(a, b) {
+        var count_a = 0, count_b = 0, tags = this.state.tags;
+        for (var i = 0; i < tags.length; ++i) {
+          if (a.content.toLowerCase().search(tags[i].toLowerCase()) >= 0)
+            count_a++;
+          if (b.content.toLowerCase().search(tags[i].toLowerCase()) >= 0)
+            count_b++;
+        }
+        if (count_a > 0 || count_b > 0)
+          console.log(count_a, count_b);
+        return -count_a + count_b;
+      }).bind(this));
+    }
+
+    articles = articles.filter(function(a) {
+      var ban = store.getState().ban;
+      for (var i = 0; i < ban.length; ++i)
+        if (a.author == ban[i])
+          return false;
+      return true;
+    });
+
+    const ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
+    var dataSource = ds.cloneWithRows(articles);
+
     return (
       <View style={styles.container}>
         <ListView
-          dataSource={this.state.dataSource}
+          dataSource={dataSource}
           renderRow={this.listItemRender.bind(this)}
         />
-        <TouchableHighlight style={styles.footer} onPress={this._upload} underlayColor={'#6699CC'}>
+        <TouchableHighlight style={styles.footer} onPress={this._upload.bind(this)} underlayColor={'#6699CC'}>
           <Text style={styles.upload}>+</Text>
         </TouchableHighlight>
-        <TouchableHighlight style={styles.friends} onPress={this._goFriends} underlayColor={'#6699CC'}>
+        <TouchableHighlight style={styles.friends} onPress={this._goFriends.bind(this)} underlayColor={'#6699CC'}>
           <Text style={styles.upload}>F</Text>
+        </TouchableHighlight>
+        <TouchableHighlight style={styles.admin} onPress={this._goAdmin.bind(this)} underlayColor={'#6699CC'}>
+          <Text style={styles.upload}>A</Text>
+        </TouchableHighlight>
+        <TouchableHighlight style={styles.use_tags} onPress={this._use_tag.bind(this)} underlayColor={'#6699CC'}>
+          <Text style={styles.upload}>T</Text>
         </TouchableHighlight>
         <TouchableHighlight style={styles.me} onPress={this._goProfile} underlayColor={'#6699CC'}>
           <Text style={styles.upload}>M</Text>
@@ -135,7 +185,27 @@ const styles = StyleSheet.create({
   me: {
     position: 'absolute',
     bottom: 0,
-    left: 20,
+    left: 10,
+    width: 50,
+    height: 50,
+    backgroundColor:'#66CCFF',
+    borderRadius: 40,
+    alignItems: "center"
+  },
+  admin: {
+    position: 'absolute',
+    bottom: 0,
+    left: 72.5,
+    width: 50,
+    height: 50,
+    backgroundColor:'#66CCFF',
+    borderRadius: 40,
+    alignItems: "center"
+  },
+  use_tags: {
+    position: 'absolute',
+    bottom: 0,
+    right: 72.5,
     width: 50,
     height: 50,
     backgroundColor:'#66CCFF',
@@ -145,7 +215,7 @@ const styles = StyleSheet.create({
   friends: {
     position: 'absolute',
     bottom: 0,
-    right: 20,
+    right: 10,
     width: 50,
     height: 50,
     backgroundColor:'#66CCFF',

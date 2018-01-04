@@ -8,6 +8,7 @@ import {ArticlePage} from './components/ios/article.js';
 import {RegisterPage} from './components/ios/register.js';
 import {ProfilePage} from './components/ios/profile.js';
 import {FollowPage} from './components/ios/follow.js';
+import {AdminPage} from './components/ios/admin.js';
 import {store} from './reducers';
 
 
@@ -30,6 +31,7 @@ export default class App extends React.Component {
       REGISTER_PAGE: <RegisterPage />,
       PROFILE_PAGE: <ProfilePage />,
       FOLLOW_PAGE: <FollowPage />,
+      ADMIN_PAGE: <AdminPage />,
       current: LOGIN_PAGE
     }
   }
